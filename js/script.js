@@ -11,13 +11,23 @@ function getRandomData(length, min, max) {
     return Array.from({ length }, () => Math.floor(Math.random() * (max - min + 1)) + min);
 }
 
+// Datos para la simulación de la Tabla
+const clients = ['Acme Corp', 'Globex', 'Soylent', 'Initech', 'Umbrella', 'Stark Ind', 'Wayne Ent', 'Massive Dyn', 'Cyberdyne', 'Oscorp'];
+const services = ['Consultoría Cloud', 'Soporte Premium', 'Licencia Enterprise', 'Auditoría SEO', 'Desarrollo Web', 'Integración API', 'Campaña Ads'];
+
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
+    generateTableData(); // Llenar la tabla al inicio
 
-    // Evento para botón de "Refrescar Datos" que simula un llamado a servidor
-    document.getElementById('refresh-data-btn').addEventListener('click', () => {
-        updateAnalytics();
+    // Eventos de controles secundarios
+    document.getElementById('refresh-data-btn').addEventListener('click', updateAnalytics);
+    
+    document.getElementById('date-range').addEventListener('change', (e) => {
+        updateAnalytics(); // Refrescar gráficos simulando el cambio de fecha
+        generateTableData(e.target.value);
     });
+
+    document.getElementById('export-btn').addEventListener('click', exportToCSV);
 });
 
 function initCharts() {
@@ -188,5 +198,67 @@ function updateAnalytics() {
     acquisitionChart.data.datasets[0].data = getRandomData(7, 80, 350);
     acquisitionChart.update();
     
-    alert('✅ Datos actualizados (simulación)');
+    // Refrescar tabla en base al filtro seleccionado simulado
+    const daysSelector = document.getElementById('date-range').value;
+    generateTableData(daysSelector);
+}
+
+// Función para poblar dinámicamente la tabla
+function generateTableData(daysAgo = 30) {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = ''; // Limpiar filas viejas
+    
+    // Generar entre 5 y 8 transacciones
+    const numRows = Math.floor(Math.random() * 4) + 5;
+    
+    for (let i = 0; i < numRows; i++) {
+        const id = 'TRX-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        
+        // Simular fecha reciente según el selector
+        const date = new Date();
+        date.setDate(date.getDate() - Math.floor(Math.random() * daysAgo));
+        const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+        
+        const client = clients[Math.floor(Math.random() * clients.length)];
+        const service = services[Math.floor(Math.random() * services.length)];
+        
+        // Ponderar estado: más completed, poco failed
+        const randStatus = Math.random();
+        let status = 'completed';
+        if (randStatus > 0.8) status = 'pending';
+        if (randStatus > 0.95) status = 'failed';
+        
+        const amount = (Math.random() * 5000 + 500).toFixed(2);
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="font-family: monospace; color: var(--text-muted)">${id}</td>
+            <td>${dateStr}</td>
+            <td style="font-weight: 500;">${client}</td>
+            <td>${service}</td>
+            <td><span class="status-badge status-${status}">${status}</span></td>
+            <td class="tx-amount">$${parseFloat(amount).toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+// Simulador de Exportar a CSV
+function exportToCSV() {
+    const btn = document.getElementById('export-btn');
+    const originalText = btn.innerHTML;
+    
+    btn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin">
+            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>
+        </svg>
+        Generando...
+    `;
+    btn.style.opacity = '0.7';
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.opacity = '1';
+        alert('📊 Reporte CSV generado exitosamente (Simulación).\\nEn un proyecto real, se descargaría un archivo con los datos del rango de fechas activo.');
+    }, 1500);
 }

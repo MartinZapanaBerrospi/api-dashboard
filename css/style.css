@@ -15,6 +15,16 @@
     --danger: #ef4444;        /* Red */
 }
 
+/* Animations */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -152,6 +162,52 @@ body {
     background-color: var(--primary-hover);
 }
 
+.header-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+}
+
+.select-input {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.select-input:focus {
+    border-color: var(--primary);
+}
+
+.btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
 /* KPI Cards */
 .kpi-grid {
     display: grid;
@@ -267,6 +323,76 @@ body {
 
 .side-chart .chart-container {
     height: 300px;
+}
+
+/* Data Table */
+.data-table-container {
+    margin-top: 1.5rem;
+    overflow: hidden;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+#transactions-table th {
+    background-color: rgba(255,255,255,0.02);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+#transactions-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(51,65,85,0.5);
+    font-size: 0.95rem;
+}
+
+#transactions-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#transactions-table tbody tr:hover {
+    background-color: rgba(255,255,255,0.02);
+}
+
+.status-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-completed {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--accent);
+}
+
+.status-pending {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+}
+
+.status-failed {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.tx-amount {
+    font-weight: 600;
+    font-family: monospace;
+    font-size: 1rem;
 }
 
 /* Responsive */
