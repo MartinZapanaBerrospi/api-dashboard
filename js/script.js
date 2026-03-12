@@ -18,6 +18,7 @@ const services = ['Consultoría Cloud', 'Soporte Premium', 'Licencia Enterprise'
 // Variables base para simular consistencia de datos entre filtros temporales
 let baseDailyRevenue = 0;
 let baseDailyCustomers = 0;
+let baseConversionRate = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function fetchNewData() {
     baseDailyRevenue = ~~(Math.random() * 500) + 1500; // Media de $1500-$2000 al dia
     baseDailyCustomers = ~~(Math.random() * 10) + 20;  // Media de 20-30 clientes al dia
+    baseConversionRate = Math.random() * (6.5 - 2.5) + 2.5; // Tasa base estructural entre 2.5% y 6.5%
     updateAnalytics();
 }
 
@@ -201,12 +203,18 @@ function updateAnalytics() {
     const projectedRevenue = daysSelector * baseDailyRevenue;
     const projectedCustomers = daysSelector * baseDailyCustomers;
 
-    // KPI Cards Updates (Ahora con varianza proporcional)
-    document.getElementById('kpi-revenue').textContent = getRandomData(1, projectedRevenue * 0.9, projectedRevenue * 1.1)[0].toLocaleString();
-    document.getElementById('kpi-customers').textContent = getRandomData(1, projectedCustomers * 0.9, projectedCustomers * 1.1)[0].toLocaleString();
+    // KPI Cards Updates (Ahora en Enteros garantizados)
+    const revMin = Math.floor(projectedRevenue * 0.9);
+    const revMax = Math.floor(projectedRevenue * 1.1);
+    const custMin = Math.floor(projectedCustomers * 0.9);
+    const custMax = Math.floor(projectedCustomers * 1.1);
+
+    document.getElementById('kpi-revenue').textContent = getRandomData(1, revMin, revMax)[0].toLocaleString('en-US', {maximumFractionDigits: 0});
+    document.getElementById('kpi-customers').textContent = getRandomData(1, custMin, custMax)[0].toLocaleString('en-US', {maximumFractionDigits: 0});
     
-    // Tasa de conversión no es acumulativa, fluctúa lógicamente entre 2.5% y 6.5% siempre
-    document.getElementById('kpi-conversion').textContent = (Math.random() * (6.5 - 2.5) + 2.5).toFixed(1);
+    // Tasa de conversión controlada y constante con base en el servidor
+    const currentConversion = baseConversionRate + (Math.random() * 0.2 - 0.1); 
+    document.getElementById('kpi-conversion').textContent = currentConversion.toFixed(1);
 
     // Update Line Chart (Ingresos mensuales escalados proporcionalmente)
     // Dividimos la proyección entre 12 meses aprox para simular la línea
