@@ -21,12 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Eventos de controles secundarios
     document.getElementById('refresh-data-btn').addEventListener('click', updateAnalytics);
-    
-    document.getElementById('date-range').addEventListener('change', (e) => {
-        updateAnalytics(); // Refrescar gráficos simulando el cambio de fecha
-        generateTableData(e.target.value);
-    });
-
     document.getElementById('export-btn').addEventListener('click', exportToCSV);
 });
 
