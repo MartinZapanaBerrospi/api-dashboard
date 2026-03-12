@@ -212,9 +212,31 @@ function updateAnalytics() {
     document.getElementById('kpi-revenue').textContent = getRandomData(1, revMin, revMax)[0].toLocaleString('en-US', {maximumFractionDigits: 0});
     document.getElementById('kpi-customers').textContent = getRandomData(1, custMin, custMax)[0].toLocaleString('en-US', {maximumFractionDigits: 0});
     
+    // Textos de contexto temporal en las tarjetas KPI
+    let timeLabel = "mes anterior";
+    if (daysSelector === 7) timeLabel = "semana anterior";
+    if (daysSelector === 90) timeLabel = "trimestre anterior";
+    if (daysSelector === 365) timeLabel = "año anterior";
+
+    // Generador de variaciones aleatorias para visualización en las tendencias
+    const revTrend = (Math.random() * 15 + 1).toFixed(1);
+    const cusTrend = (Math.random() * 10 + 1).toFixed(1);
+    const conTrend = (Math.random() * 3 + 0.1).toFixed(1);
+
+    document.getElementById('trend-revenue').textContent = `↑ ${revTrend}% vs ${timeLabel}`;
+    document.getElementById('trend-customers').textContent = `↑ ${cusTrend}% vs ${timeLabel}`;
+
     // Tasa de conversión controlada y constante con base en el servidor
     const currentConversion = baseConversionRate + (Math.random() * 0.2 - 0.1); 
     document.getElementById('kpi-conversion').textContent = currentConversion.toFixed(1);
+    
+    // Mostramos la fluctuación de conversión orgánicamente
+    const isPositive = currentConversion > baseConversionRate;
+    const arrow = isPositive ? '↑' : '↓';
+    const trendClass = isPositive ? 'positive' : 'negative';
+    const trendEl = document.getElementById('trend-conversion');
+    trendEl.textContent = `${arrow} ${conTrend}% vs ${timeLabel}`;
+    trendEl.className = `kpi-trend ${trendClass}`;
 
     // Update Line Chart (Ingresos mensuales escalados proporcionalmente)
     // Dividimos la proyección entre 12 meses aprox para simular la línea
