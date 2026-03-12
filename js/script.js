@@ -172,15 +172,28 @@ function initCharts() {
 }
 
 function updateAnalytics() {
-    // Generar nuevos datos aleatorios (simulando API)
+    // Leer el selector de días
+    const daysSelector = parseInt(document.getElementById('date-range').value);
     
-    // KPI Cards Updates
-    document.getElementById('kpi-revenue').textContent = getRandomData(1, 90000, 150000)[0].toLocaleString();
-    document.getElementById('kpi-customers').textContent = getRandomData(1, 1000, 3000)[0].toLocaleString();
+    // Simular un crecimiento lógico usando multiplicadores basados en los días
+    // Asumiremos como base 1 cliente y $200 de ingreso diario para proyectar mínimos y máximos creíbles.
+    const averageDailyRevenue = ~~(Math.random() * 500) + 1500; // Entre 1500 y 2000 usd al dia
+    const averageDailyCustomers = ~~(Math.random() * 10) + 20; // Entre 20 y 30 clientes al dia
+    
+    const projectedRevenue = daysSelector * averageDailyRevenue;
+    const projectedCustomers = daysSelector * averageDailyCustomers;
+
+    // KPI Cards Updates (Ahora con varianza proporcional)
+    document.getElementById('kpi-revenue').textContent = getRandomData(1, projectedRevenue * 0.9, projectedRevenue * 1.1)[0].toLocaleString();
+    document.getElementById('kpi-customers').textContent = getRandomData(1, projectedCustomers * 0.9, projectedCustomers * 1.1)[0].toLocaleString();
+    
+    // Tasa de conversión no es acumulativa, fluctúa lógicamente entre 2.5% y 6.5% siempre
     document.getElementById('kpi-conversion').textContent = (Math.random() * (6.5 - 2.5) + 2.5).toFixed(1);
 
-    // Update Line Chart
-    revenueChart.data.datasets[0].data = getRandomData(12, 10000, 50000);
+    // Update Line Chart (Ingresos mensuales escalados proporcionalmente)
+    // Dividimos la proyección entre 12 meses aprox para simular la línea
+    const monthlyAvg = projectedRevenue / (daysSelector <= 30 ? 1 : (daysSelector / 30));
+    revenueChart.data.datasets[0].data = getRandomData(12, monthlyAvg * 0.6, monthlyAvg * 1.4);
     revenueChart.update();
 
     // Update Doughnut Chart (Needs to sum ~100)
@@ -188,12 +201,11 @@ function updateAnalytics() {
     categoryChart.data.datasets[0].data = newCatData;
     categoryChart.update();
 
-    // Update Bar Chart
-    acquisitionChart.data.datasets[0].data = getRandomData(7, 80, 350);
+    // Update Bar Chart (Adquisición semanal)
+    acquisitionChart.data.datasets[0].data = getRandomData(7, (averageDailyCustomers*7)*0.1, (averageDailyCustomers*7)*0.4);
     acquisitionChart.update();
     
     // Refrescar tabla en base al filtro seleccionado simulado
-    const daysSelector = document.getElementById('date-range').value;
     generateTableData(daysSelector);
 }
 
