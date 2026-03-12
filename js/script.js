@@ -15,14 +15,36 @@ function getRandomData(length, min, max) {
 const clients = ['Acme Corp', 'Globex', 'Soylent', 'Initech', 'Umbrella', 'Stark Ind', 'Wayne Ent', 'Massive Dyn', 'Cyberdyne', 'Oscorp'];
 const services = ['Consultoría Cloud', 'Soporte Premium', 'Licencia Enterprise', 'Auditoría SEO', 'Desarrollo Web', 'Integración API', 'Campaña Ads'];
 
+// Variables base para simular consistencia de datos entre filtros temporales
+let baseDailyRevenue = 0;
+let baseDailyCustomers = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
-    generateTableData(); // Llenar la tabla al inicio
+    
+    // Generar bases iniciales y poblar al inicio
+    fetchNewData();
 
     // Eventos de controles secundarios
-    document.getElementById('refresh-data-btn').addEventListener('click', updateAnalytics);
+    document.getElementById('refresh-data-btn').addEventListener('click', () => {
+        alert('🔄 Conectando al servidor... Refrescando base de datos simulada.');
+        fetchNewData();
+    });
+    
+    document.getElementById('date-range').addEventListener('change', () => {
+        // Al cambiar de fecha, solo rescalamos la info existente
+        updateAnalytics();
+    });
+
     document.getElementById('export-btn').addEventListener('click', exportToCSV);
 });
+
+// Función para simular "Traer nueva Data"
+function fetchNewData() {
+    baseDailyRevenue = ~~(Math.random() * 500) + 1500; // Media de $1500-$2000 al dia
+    baseDailyCustomers = ~~(Math.random() * 10) + 20;  // Media de 20-30 clientes al dia
+    updateAnalytics();
+}
 
 function initCharts() {
     // -----------------------------------------------------------
@@ -174,14 +196,10 @@ function initCharts() {
 function updateAnalytics() {
     // Leer el selector de días
     const daysSelector = parseInt(document.getElementById('date-range').value);
-    
     // Simular un crecimiento lógico usando multiplicadores basados en los días
-    // Asumiremos como base 1 cliente y $200 de ingreso diario para proyectar mínimos y máximos creíbles.
-    const averageDailyRevenue = ~~(Math.random() * 500) + 1500; // Entre 1500 y 2000 usd al dia
-    const averageDailyCustomers = ~~(Math.random() * 10) + 20; // Entre 20 y 30 clientes al dia
-    
-    const projectedRevenue = daysSelector * averageDailyRevenue;
-    const projectedCustomers = daysSelector * averageDailyCustomers;
+    // Usamos las variables globales baseDailyRevenue y baseDailyCustomers generadas por fetchNewData()
+    const projectedRevenue = daysSelector * baseDailyRevenue;
+    const projectedCustomers = daysSelector * baseDailyCustomers;
 
     // KPI Cards Updates (Ahora con varianza proporcional)
     document.getElementById('kpi-revenue').textContent = getRandomData(1, projectedRevenue * 0.9, projectedRevenue * 1.1)[0].toLocaleString();
@@ -202,7 +220,7 @@ function updateAnalytics() {
     categoryChart.update();
 
     // Update Bar Chart (Adquisición semanal)
-    acquisitionChart.data.datasets[0].data = getRandomData(7, (averageDailyCustomers*7)*0.1, (averageDailyCustomers*7)*0.4);
+    acquisitionChart.data.datasets[0].data = getRandomData(7, (baseDailyCustomers*7)*0.1, (baseDailyCustomers*7)*0.4);
     acquisitionChart.update();
     
     // Refrescar tabla en base al filtro seleccionado simulado
